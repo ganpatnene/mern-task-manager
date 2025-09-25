@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import API from "../api";
+import TaskForm from "../components/TaskForm";
+import TaskList from "../components/TaskList";
 
 export default function Dashboard() {
-  const [message, setMessage] = useState("");
+  const [tasks, setTasks] = useState([]);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -13,9 +15,8 @@ export default function Dashboard() {
       return;
     }
 
-    // Call backend protected route
-    API.get("/protected")
-      .then((res) => setMessage(res.data.message))
+    API.get("/tasks")
+      .then((res) => setTasks(res.data))
       .catch(() => {
         localStorage.removeItem("token");
         navigate("/login");
@@ -30,8 +31,11 @@ export default function Dashboard() {
   return (
     <div>
       <h2>Dashboard</h2>
-      <p>{message}</p>
       <button onClick={handleLogout}>Logout</button>
+
+      <h3>Your Tasks</h3>
+      <TaskForm onTaskAdded={(task) => setTasks((prev) => [...prev, task])} />
+      <TaskList tasks={tasks} setTasks={setTasks} />
     </div>
   );
 }
