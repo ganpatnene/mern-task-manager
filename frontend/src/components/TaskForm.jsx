@@ -1,36 +1,32 @@
 import { useState } from "react";
 import API from "../api";
+import toast from "react-hot-toast";
 
 export default function TaskForm({ onTaskAdded }) {
   const [title, setTitle] = useState("");
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    if (!title.trim()) return;
-
     try {
       const res = await API.post("/tasks", { title });
       onTaskAdded(res.data);
       setTitle("");
-    } catch (err) {
-      console.error(err.response?.data || err.message);
+      toast.success("Task added ✅");
+    } catch {
+      toast.error("Failed to add task ❌");
     }
   };
 
   return (
-    <form onSubmit={handleSubmit} className="flex space-x-2 mt-4">
+    <form onSubmit={handleSubmit} className="flex gap-2 mb-4">
       <input
         type="text"
-        placeholder="Enter task..."
+        placeholder="New task..."
+        className="flex-grow border p-2 rounded"
         value={title}
         onChange={(e) => setTitle(e.target.value)}
-        required
-        className="flex-grow border rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
       />
-      <button
-        type="submit"
-        className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-      >
+      <button className="bg-blue-500 text-white px-4 rounded hover:bg-blue-600">
         Add
       </button>
     </form>

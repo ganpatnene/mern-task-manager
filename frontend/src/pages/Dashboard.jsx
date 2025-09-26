@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import API from "../api";
 import TaskForm from "../components/TaskForm";
 import TaskList from "../components/TaskList";
+import toast from "react-hot-toast";
 
 export default function Dashboard() {
   const [tasks, setTasks] = useState([]);
@@ -17,7 +18,8 @@ export default function Dashboard() {
 
     API.get("/tasks")
       .then((res) => setTasks(res.data))
-      .catch(() => {
+      .catch((err) => {
+        toast.error(err.response?.data?.msg || "Failed to load tasks ❌");
         localStorage.removeItem("token");
         navigate("/login");
       });
@@ -25,6 +27,7 @@ export default function Dashboard() {
 
   const handleLogout = () => {
     localStorage.removeItem("token");
+    toast.success("Logged out 👋");
     navigate("/login");
   };
 
